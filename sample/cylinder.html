@@ -1,0 +1,133 @@
+<html>
+<head>
+    <title>object - cylinder</title>
+    <script src="../libs/three.js"></script>
+    <script src="../libs/dat.gui.min.js"></script>
+    <style>
+      body {
+      	  margin:0;
+      }
+    </style>
+  </head>
+<script>
+
+    // 繧ｰ繝ｭ繝ｼ繝舌Ν螟画焚
+    var renderer;
+    var scene;
+    var camera;
+    var object;
+    
+    //dat.gui.min.js繧剃ｽｿ逕ｨ縺励※��GUI繧剃ｽｿ縺｣縺ｦ�峨ヱ繝ｩ繝｡繝ｼ繧ｿ繧貞､画峩縺ｧ縺阪ｋ繧医≧縺ｫ縺吶ｋ
+    var control
+    
+    var pivot;
+
+    //蛻晄悄蛹夜未謨ｰ
+    function init() {
+
+        // 繧ｷ繝ｼ繝ｳ逕滓�
+        scene = new THREE.Scene();
+
+        // 繧ｫ繝｡繝ｩ逕滓��夊ｦ夜㍽隗�45蠎ｦ縲√い繧ｹ繝壹け繝域ｯ費ｼ晉判髱｢邵ｦ讓ｪ豈斐∝庄隕夜�伜沺
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        // 繝ｬ繝ｳ繝繝ｩ繝ｼ逕滓��夊レ譎ｯ濶ｲ縲√し繧､繧ｺ縺ｪ縺ｩ縲�
+        renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor(0x000000, 1.0);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+ 
+        // 3D繧ｪ繝悶ず繧ｧ繧ｯ繝医�逕滓�
+        //蠖｢迥ｶ諠��ｱ�壼�譟ｱ縲∽ｸ企擇縺ｮ蜊雁ｾ�∝ｺ暮擇縺ｮ蜊雁ｾ��ｫ倥＆縲∝�蜻ｨ縺ｮ蛻�牡謨ｰ
+        var meshGeometry = new THREE.CylinderGeometry(2, 3, 10, 20);
+        // 譚占ｳｪ迚ｹ諤ｧ�啀hong shading螳溯｡後∬牡縲《hininess縺ｪ縺ｩ繧定ｨｭ螳�
+        var meshMaterial = new THREE.MeshPhongMaterial({color: 'red', shininess:100});
+        object = new THREE.Mesh(meshGeometry, meshMaterial);
+        //�泥繧ｪ繝悶ず繧ｧ繧ｯ繝医↓蜷榊燕繧偵▽縺代ｋ�亥盾辣ｧ逕ｨ��
+        object.name='myobj';
+        scene.add(object);
+        
+        // 繧ｫ繝｡繝ｩ菴咲ｽｮ繧定ｨｭ螳壹＠縲∝ｺｧ讓吝次轤ｹ繧貞髄縺�
+        camera.position.x = 15;
+        camera.position.y = 16;
+        camera.position.z = 13;
+        camera.lookAt(scene.position);
+        
+        
+        // 蜈画ｺ占ｨｭ螳夲ｼ壼ｽｱ繧堤函謌舌☆繧九◆繧√�繧ｹ繝昴ャ繝医Λ繧､繝医ｒ逕滓�
+        var spotLight = new THREE.SpotLight(0xffffff);
+        spotLight.position.set(10, 20, 20);
+        spotLight.shadowCameraNear = 20;
+        spotLight.shadowCameraFar = 50;
+        spotLight.castShadow = true;
+
+        scene.add(spotLight);
+         
+        //GUI逕ｨ縺ｮ繧ｪ繝悶ず繧ｧ繧ｯ繝医ｒ逕滓�
+        control = new function(){
+           this.rotationX = 0; 
+           this.rotationY = 0;
+           this.rotationZ = 0; 
+           this.color = meshMaterial.color.getHex();	//繧ｪ繝悶ず繧ｧ繧ｯ繝医�濶ｲ螟画峩逕ｨ
+        };
+        addControlGui(control);
+
+
+        // 繝ｬ繝ｳ繝繝ｩ繝ｼ繧檀tml縺ｫ霑ｽ蜉�
+        document.body.appendChild(renderer.domElement);
+
+        // call the render function, after the first render, interval is determined
+        // by requestAnimationFrame
+        render();
+    }
+    
+    //GUI險ｭ螳�
+    function addControlGui(controlObject) {
+        var gui = new dat.GUI();
+        gui.add(controlObject, 'rotationX', -360, 360); //蝗櫁ｻ｢隗偵�蟷�
+        gui.add(controlObject, 'rotationY', -360, 360); //蝗櫁ｻ｢隗偵�蟷�
+        gui.add(controlObject, 'rotationZ', -360, 360); //蝗櫁ｻ｢隗偵�蟷�
+        gui.addColor(controlObject, 'color');
+    }
+
+
+     //謠冗判逕ｨ髢｢謨ｰ縺ｮ螳夂ｾｩ
+    function render() {
+
+    	 // 濶ｲ縺ｮ螟画峩
+	object.material.color = new THREE.Color(control.color);
+
+	//蝗櫁ｻ｢
+
+    	object.rotation.z = 2.0 * (control.rotationX/360) * Math.PI;
+    	object.rotation.y = 2.0 * (control.rotationY/360) * Math.PI;
+    	object.rotation.x = 2.0 * (control.rotationZ/360) * Math.PI;
+    	
+    	
+        // render using requestAnimationFrame
+        requestAnimationFrame(render);
+        renderer.render(scene, camera);
+    }
+
+
+
+
+    /**
+     * Function handles the resize event. This make sure the camera and the renderer
+     * are updated at the correct moment.
+     */
+    function handleResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // 繧ｦ繧｣繝ｳ繝峨え縺後Ο繝ｼ繝峨＆繧後◆縺ｨ縺阪↓init縺悟他縺ｳ蜃ｺ縺輔ｌ繧九ｈ縺�↓險ｭ螳�
+    window.onload = init;
+    // resize繧､繝吶Φ繝医′逋ｺ逕溘＠縺溘→縺阪↓handleResize縺悟他縺ｳ蜃ｺ縺輔ｌ繧九ｈ縺�ｨｭ螳�
+    window.addEventListener('resize', handleResize, false);
+
+</script>
+<body>
+</body>
+</html>
