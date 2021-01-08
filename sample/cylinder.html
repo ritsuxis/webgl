@@ -1,14 +1,15 @@
 <html>
+
 <head>
     <title>object - cylinder</title>
     <script src="../libs/three.min.js"></script>
     <script src="../libs/dat.gui.min.js"></script>
     <style>
-      body {
-      	  margin:0;
-      }
+        body {
+            margin: 0;
+        }
     </style>
-  </head>
+</head>
 <script>
 
     // 繧ｰ繝ｭ繝ｼ繝舌Ν螟画焚
@@ -18,62 +19,50 @@
     var object;
     var object2;
     var object3;
-    
-    //dat.gui.min.js繧剃ｽｿ逕ｨ縺励※��GUI繧剃ｽｿ縺｣縺ｦ�峨ヱ繝ｩ繝｡繝ｼ繧ｿ繧貞､画峩縺ｧ縺阪ｋ繧医≧縺ｫ縺吶ｋ
+    const DEGTORAD = Math.PI / 180;
+
     var control
-    
+
     var pivot;
 
-    //蛻晄悄蛹夜未謨ｰ
     function init() {
 
-        // 繧ｷ繝ｼ繝ｳ逕滓�
         scene = new THREE.Scene();
-
-        // 繧ｫ繝｡繝ｩ逕滓��夊ｦ夜㍽隗�45蠎ｦ縲√い繧ｹ繝壹け繝域ｯ費ｼ晉判髱｢邵ｦ讓ｪ豈斐∝庄隕夜�伜沺
         camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-        // 繝ｬ繝ｳ繝繝ｩ繝ｼ逕滓��夊レ譎ｯ濶ｲ縲√し繧､繧ｺ縺ｪ縺ｩ縲�
         renderer = new THREE.WebGLRenderer();
         renderer.setClearColor(0x000000, 1.0);
         renderer.setSize(window.innerWidth, window.innerHeight);
 
- 
-        // 3D繧ｪ繝悶ず繧ｧ繧ｯ繝医�逕滓�
-        //蠖｢迥ｶ諠��ｱ�壼�譟ｱ縲∽ｸ企擇縺ｮ蜊雁ｾ�∝ｺ暮擇縺ｮ蜊雁ｾ��ｫ倥＆縲∝�蜻ｨ縺ｮ蛻�牡謨ｰ
-        var meshGeometry = new THREE.CylinderGeometry(1, 1, 5, 20);
-        // 譚占ｳｪ迚ｹ諤ｧ�啀hong shading螳溯｡後∬牡縲《hininess縺ｪ縺ｩ繧定ｨｭ螳�
-        var meshMaterial = new THREE.MeshPhongMaterial({color: 'red', shininess:100});
+        var axes = new THREE.AxisHelper(25);
+        scene.add(axes);
+
+        var meshGeometry = new THREE.CylinderGeometry(1, 1, 5);
+        var meshMaterial = new THREE.MeshPhongMaterial({ color: 'red', shininess: 100 });
         object = new THREE.Mesh(meshGeometry, meshMaterial);
-        //�泥繧ｪ繝悶ず繧ｧ繧ｯ繝医↓蜷榊燕繧偵▽縺代ｋ�亥盾辣ｧ逕ｨ��
         object.position.x = 0;
-        object.name='myobj';
+        object.position.y = 2.5;
+        object.name = 'myobj';
         scene.add(object);
 
-        
-        //�泥繧ｪ繝悶ず繧ｧ繧ｯ繝医↓蜷榊燕繧偵▽縺代ｋ�亥盾辣ｧ逕ｨ��
         var meshMaterial2 = new THREE.MeshPhongMaterial({ color: 'blue', shininess: 100 });
         object2 = new THREE.Mesh(meshGeometry, meshMaterial2);
         object2.position.y = 5;
         object2.name = 'myobj2';
         object.add(object2);
 
-        
-        //�泥繧ｪ繝悶ず繧ｧ繧ｯ繝医↓蜷榊燕繧偵▽縺代ｋ�亥盾辣ｧ逕ｨ��
         var meshMaterial3 = new THREE.MeshPhongMaterial({ color: 'green', shininess: 100 });
         object3 = new THREE.Mesh(meshGeometry, meshMaterial3);
         object3.position.y = 5; // ここの座標は親オブジェクトの位置を原点としてのローカル座標
         object3.name = 'myobj3';
         object2.add(object3);
-        
-        // 繧ｫ繝｡繝ｩ菴咲ｽｮ繧定ｨｭ螳壹＠縲∝ｺｧ讓吝次轤ｹ繧貞髄縺�
+
         camera.position.x = 15;
         camera.position.y = 16;
         camera.position.z = 13;
         camera.lookAt(scene.position);
-        
-        
-        // 蜈画ｺ占ｨｭ螳夲ｼ壼ｽｱ繧堤函謌舌☆繧九◆繧√�繧ｹ繝昴ャ繝医Λ繧､繝医ｒ逕滓�
+
+
         var spotLight = new THREE.SpotLight(0xffffff);
         spotLight.position.set(10, 20, 20);
         spotLight.shadowCameraNear = 20;
@@ -81,56 +70,52 @@
         spotLight.castShadow = true;
 
         scene.add(spotLight);
-         
-        //GUI逕ｨ縺ｮ繧ｪ繝悶ず繧ｧ繧ｯ繝医ｒ逕滓�
-        control = new function(){
-           this.rotationX = 0; 
-           this.rotationY = 0;
-           this.rotationZ = 0; 
-           this.rotationX2 = 0;
-           this.color = meshMaterial.color.getHex();	//繧ｪ繝悶ず繧ｧ繧ｯ繝医�濶ｲ螟画峩逕ｨ
+
+        control = new function () {
+            this.arm1 = 0;
+            this.rotation1 = 0;
+            this.arm2 = 0;
+            this.rotation2 = 0;
+            this.arm3 = 0;
+            this.rotation3 = 0;
         };
         addControlGui(control);
 
 
-        // 繝ｬ繝ｳ繝繝ｩ繝ｼ繧檀tml縺ｫ霑ｽ蜉�
         document.body.appendChild(renderer.domElement);
 
         // call the render function, after the first render, interval is determined
         // by requestAnimationFrame
         render();
     }
-    
-    //GUI險ｭ螳�
+
+    //GUI
     function addControlGui(controlObject) {
         var gui = new dat.GUI();
-        gui.add(controlObject, 'rotationX', -360, 360); //蝗櫁ｻ｢隗偵�蟷�
-        gui.add(controlObject, 'rotationY', -360, 360); //蝗櫁ｻ｢隗偵�蟷�
-        gui.add(controlObject, 'rotationZ', -360, 360); //蝗櫁ｻ｢隗偵�蟷�
-        gui.add(controlObject, 'rotationX2', -360, 360);
-        gui.addColor(controlObject, 'color');
+        gui.add(controlObject, 'arm1', -90, 90);
+        gui.add(controlObject, 'rotation1', -180, 180);
+        gui.add(controlObject, 'arm2', -90, 90);
+        gui.add(controlObject, 'rotation2', -360, 360);
+        gui.add(controlObject, 'arm3', -90, 90);
+        gui.add(controlObject, 'rotation3', -360, 360);
     }
 
 
-     //謠冗判逕ｨ髢｢謨ｰ縺ｮ螳夂ｾｩ
     function render() {
+        // object.rotation.z = (control.arm1 / 180) * Math.PI;
+        object.rotation.z = Math.sin(control.arm1 * DEGTORAD) * Math.cos(control.rotation1 * DEGTORAD);
+        object.rotation.x = Math.sin(control.arm1 * DEGTORAD) * Math.sin(control.rotation1 * DEGTORAD);
+        object.position.set(2.5 * Math.sin(control.arm1 * DEGTORAD) * Math.sin(control.rotation1 * DEGTORAD), 2.5 * Math.cos(control.arm1 * DEGTORAD), 2.5 * Math.sin(control.arm1 * DEGTORAD) * Math.cos(control.rotation1 * DEGTORAD));
 
-    	 // 濶ｲ縺ｮ螟画峩
-	object.material.color = new THREE.Color(control.color);
+        object2.rotation.z = 2.0 * (control.arm2 / 360) * Math.PI;
+        object2.rotation.y = 2.0 * (control.rotation2 / 360) * Math.PI;
 
-	//蝗櫁ｻ｢
-
-    	object.rotation.z = 2.0 * (control.rotationX/360) * Math.PI;
-    	object.rotation.y = 2.0 * (control.rotationY/360) * Math.PI;
-    	object.rotation.x = 2.0 * (control.rotationZ/360) * Math.PI;
-    	
-    	object2.rotation.x = 2.0 * (control.rotationX2 / 360) * Math.PI;
+        object3.rotation.z = 2.0 * (control.arm3 / 360) * Math.PI;
+        object3.rotation.y = 2.0 * (control.rotation3 / 360) * Math.PI;
         // render using requestAnimationFrame
         requestAnimationFrame(render);
         renderer.render(scene, camera);
     }
-
-
 
 
     /**
@@ -143,12 +128,12 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    // 繧ｦ繧｣繝ｳ繝峨え縺後Ο繝ｼ繝峨＆繧後◆縺ｨ縺阪↓init縺悟他縺ｳ蜃ｺ縺輔ｌ繧九ｈ縺�↓險ｭ螳�
     window.onload = init;
-    // resize繧､繝吶Φ繝医′逋ｺ逕溘＠縺溘→縺阪↓handleResize縺悟他縺ｳ蜃ｺ縺輔ｌ繧九ｈ縺�ｨｭ螳�
     window.addEventListener('resize', handleResize, false);
 
 </script>
+
 <body>
 </body>
+
 </html>
