@@ -27,22 +27,31 @@
 
     function init() {
 
+        // シーンオブジェクトの作成
         scene = new THREE.Scene();
+        // カメラオブジェクトの作成
         camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-
+        
+        // レンダラーの作成、ここで背景色とか決める
         renderer = new THREE.WebGLRenderer();
         renderer.setClearColor(0x000000, 1.0);
         renderer.setSize(window.innerWidth, window.innerHeight);
 
+        // 座標軸の追加
         var axes = new THREE.AxisHelper(25);
         scene.add(axes);
 
+        // 円柱のメッシュを作成
         var meshGeometry = new THREE.CylinderGeometry(1, 1, 5);
+        // マテリアルの作成
         var meshMaterial = new THREE.MeshPhongMaterial({ color: 'red', shininess: 100 });
+        // 上のメッシュとマテリアルを使ったオブジェクトを作成
         object = new THREE.Mesh(meshGeometry, meshMaterial);
+        // オブジェクトの位置指定
         object.position.x = 0;
         object.position.y = 2.5;
         object.name = 'myobj';
+        // オブジェクトをシーンの子として追加
         scene.add(object);
 
         var meshMaterial2 = new THREE.MeshPhongMaterial({ color: 'blue', shininess: 100 });
@@ -57,20 +66,21 @@
         object3.name = 'myobj3';
         object2.add(object3);
 
+        // カメラの位置の指定
         camera.position.x = 15;
         camera.position.y = 16;
         camera.position.z = 13;
         camera.lookAt(scene.position);
 
-
+        // スポットライトの作成と位置の指定
         var spotLight = new THREE.SpotLight(0xffffff);
         spotLight.position.set(10, 20, 20);
         spotLight.shadowCameraNear = 20;
         spotLight.shadowCameraFar = 50;
         spotLight.castShadow = true;
-
         scene.add(spotLight);
 
+        // ここに指定した関数を下のaddControlGui()で使える
         control = new function () {
             this.arm1 = 0;
             this.rotation1 = 0;
@@ -86,10 +96,11 @@
 
         // call the render function, after the first render, interval is determined
         // by requestAnimationFrame
+        // 描画
         render();
     }
 
-    //GUI
+    //GUIで変更できるパラメータを追加
     function addControlGui(controlObject) {
         var gui = new dat.GUI();
         gui.add(controlObject, 'arm1', -90, 90);
@@ -100,7 +111,8 @@
         gui.add(controlObject, 'rotation3', -360, 360);
     }
 
-
+    // 描画
+    // 位置や回転を変更できる
     function render() {
         // object.rotation.z = (control.arm1 / 180) * Math.PI;
         object.rotation.z = Math.sin(control.arm1 * DEGTORAD) * Math.cos(control.rotation1 * DEGTORAD);
