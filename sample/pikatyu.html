@@ -12,19 +12,36 @@
 </head>
 <script>
 
-    // 繧ｰ繝ｭ繝ｼ繝舌Ν螟画焚
+    // オブジェクトはここで全部宣言
     var renderer;
     var scene;
     var camera;
-    var object;
-    var object2;
-    var object3;
+
+    var earUpperR;
+    var earMiddleR;
+    var earUnderR;
+
+    var earUpperL;
+    var earMiddleL;
+    var earUnderL;     
+
+    var earRight;
+    var earLeft;
+
+    var head;
+    var face;
+    var body;
+    var tail;
+    var legRight;
+    var legLeft;
+    var armRight;
+    var armLeft;
+
     var group1;
     var group2;
     var group3;
-    const DEGTORAD = Math.PI / 180;
 
-    var control
+    var control;
 
     var pivot;
 
@@ -37,21 +54,58 @@
         
         // レンダラーの作成、ここで背景色とか決める
         renderer = new THREE.WebGLRenderer();
-        renderer.setClearColor(0x000000, 1.0);
+        renderer.setClearColor(0xffffff, 1.0);
         renderer.setSize(window.innerWidth, window.innerHeight);
 
         // 座標軸の追加
         var axes = new THREE.AxisHelper(25);
         scene.add(axes);
         
+        // 耳のメッシュを作成
+        var earUpperGeometry = new THREE.ConeGeometry(1, 2, 25);
+        var earMiddleGeometry = new THREE.CylinderGeometry(1, 2, 2, 25);
+        var earUnderGeometry = new THREE.CylinderGeometry(2, 2, 4, 25)
+        // マテリアルの作成
+        var BlackMaterial = new THREE.MeshPhongMaterial({ color: 0x212121, shininess: 100 });
+        var YellowMaterial = new THREE.MeshPhongMaterial({ color: 0xffe000, shininess: 100 });
+
+        // 右耳オブジェクトの作成
+        earRight = new THREE.Group();
+        earUpperR = new THREE.Mesh(earUpperGeometry, BlackMaterial);
+        earUpperR.position.y = 5;
+        earRight.add(earUpperR);
+
+        earMiddleR = new THREE.Mesh(earMiddleGeometry, YellowMaterial);
+        earMiddleR.position.y = 3;
+        earRight.add(earMiddleR);
+        
+        earUnderR = new THREE.Mesh(earUnderGeometry, YellowMaterial);
+        earRight.add(earUnderR);
+        earRight.position.x = -2;
+        scene.add(earRight);
+
+        // 左耳オブジェクトの作成
+        earLeft = new THREE.Group();
+        earUpperL = new THREE.Mesh(earUpperGeometry, BlackMaterial);
+        earUpperL.position.y = 5;
+        earLeft.add(earUpperL);
+
+        earMiddleL = new THREE.Mesh(earMiddleGeometry, YellowMaterial);
+        earMiddleL.position.y = 3;
+        earLeft.add(earMiddleL);
+        
+        earUnderL = new THREE.Mesh(earUnderGeometry, YellowMaterial);
+        earLeft.add(earUnderL);
+        earLeft.position.x = 2;
+        scene.add(earLeft);
+        
+        // 頭のメッシュの作成
+        head = new THREE.Group();
+        
+
+        /*
         // グループ化
         group1 = new THREE.Group();
-        // 円柱のメッシュを作成
-        var meshGeometry = new THREE.CylinderGeometry(1, 1, 5);
-        // マテリアルの作成
-        var meshMaterial = new THREE.MeshPhongMaterial({ color: 'red', shininess: 100 });
-        // 上のメッシュとマテリアルを使ったオブジェクトを作成
-        object = new THREE.Mesh(meshGeometry, meshMaterial);
         // groupに追加
         group1.add(object);
         // オブジェクトの位置指定
@@ -79,6 +133,7 @@
         scene.add(group3);
         group2.add(group3);
         group3.add(object3);
+        */
 
         // カメラの位置の指定
         camera.position.x = 15;
@@ -96,12 +151,11 @@
 
         // ここに指定した関数を下のaddControlGui()で使える
         control = new function () {
-            this.arm1 = 0;
-            this.rotation1 = 0;
-            this.arm2 = 0;
-            this.rotation2 = 0;
-            this.arm3 = 0;
-            this.rotation3 = 0;
+            this.armR = 0;
+            this.armL = 0;
+            this.legR = 0;
+            this.legL = 0;
+            this.tail = 0;
         };
         addControlGui(control);
 
@@ -117,12 +171,11 @@
     //GUIで変更できるパラメータを追加
     function addControlGui(controlObject) {
         var gui = new dat.GUI();
-        gui.add(controlObject, 'arm1', -90, 90);
-        gui.add(controlObject, 'rotation1', -180, 180);
-        gui.add(controlObject, 'arm2', -90, 90);
-        gui.add(controlObject, 'rotation2', -360, 360);
-        gui.add(controlObject, 'arm3', -90, 90);
-        gui.add(controlObject, 'rotation3', -360, 360);
+        gui.add(controlObject, 'armR', -90, 90);
+        gui.add(controlObject, 'armL', -90, 180);
+        gui.add(controlObject, 'legR', -90, 90);
+        gui.add(controlObject, 'legL', -90, 90);
+        gui.add(controlObject, 'tail', -90, 90);
     }
 
     // 描画
@@ -132,7 +185,8 @@
         // object.rotation.z = Math.sin(control.arm1 * DEGTORAD) * Math.cos(control.rotation1 * DEGTORAD);
         // object.rotation.x = Math.sin(control.arm1 * DEGTORAD) * Math.sin(control.rotation1 * DEGTORAD);
         // object.position.set(2.5 * Math.sin(control.arm1 * DEGTORAD) * Math.sin(control.rotation1 * DEGTORAD), 2.5 * Math.cos(control.arm1 * DEGTORAD), 2.5 * Math.sin(control.arm1 * DEGTORAD) * Math.cos(control.rotation1 * DEGTORAD));
-
+        
+        /*
         group1.rotation.z = 2.0 * (control.arm1 / 360) * Math.PI;
         group1.rotation.y = 2.0 * (control.rotation1 / 360) * Math.PI;
 
@@ -141,6 +195,7 @@
 
         group3.rotation.z = 2.0 * (control.arm3 / 360) * Math.PI;
         group3.rotation.y = 2.0 * (control.rotation3 / 360) * Math.PI;
+        */
         // render using requestAnimationFrame
         requestAnimationFrame(render);
         renderer.render(scene, camera);
